@@ -51,8 +51,11 @@ bool EventEngine::startEngine()
 
 	servicePool->Start();
 
-	taskThread.reset(new std::thread(std::bind(&EventEngine::processTask, this)));
-	timerThread.reset(new std::thread(std::bind(&EventEngine::trigerTimer, this)));
+	//taskThread.reset(new std::thread(std::bind(&EventEngine::processTask, this)));
+	//timerThread.reset(new std::thread(std::bind(&EventEngine::trigerTimer, this)));
+
+	taskThread = new std::thread(std::bind(&EventEngine::processTask, this));
+	timerThread = new std::thread(std::bind(&EventEngine::trigerTimer, this));
 
 	return true;
 }
@@ -66,13 +69,23 @@ bool EventEngine::stopEngine()
 
 	active = false;
 
+	timerThread->join();
+	delete timerThread;
+	timerThread = nullptr;
+
 	if (taskQueue->size_approx())
 	{
 		taskThread->join();
+
+		delete taskThread;
+		taskThread = nullptr;
 	}
 	else
 	{
 		taskThread->detach();
+
+		//delete taskThread;
+		//taskThread = nullptr;
 	}
 
 	servicePool->Stop();

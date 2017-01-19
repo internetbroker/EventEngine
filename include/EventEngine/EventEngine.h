@@ -33,9 +33,11 @@ private:
 private:	
 	std::atomic<bool> active;
 
-	std::shared_ptr<std::thread> taskThread;
+	//std::shared_ptr<std::thread> taskThread;
+	std::thread* taskThread = nullptr;
 
-	std::shared_ptr<std::thread> timerThread;
+	//std::shared_ptr<std::thread> timerThread;
+	std::thread* timerThread = nullptr;
 
 	std::shared_ptr<HandlePool> handlePool;
 
