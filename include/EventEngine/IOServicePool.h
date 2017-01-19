@@ -27,8 +27,8 @@ public:
 	//stop the io service
 	void Stop();
 
-	asio::io_service& GetIOService(Id id);
-	asio::strand& GetStrand(Id id);
+	asio::io_service& GetIOService();
+	asio::strand& GetStrand();
 
 private:
 	typedef std::shared_ptr<asio::io_service> IOServicePtr;
@@ -36,13 +36,13 @@ private:
 	typedef std::shared_ptr<asio::io_service::work> WorkPtr;
 
 	/// The pool of io_services.   
-	std::vector<IOServicePtr> ioServicePool;
+	IOServicePtr ioService;
 
 	/// The pool of strand.   
-	std::vector<StrandPtr> strandPool;
+	StrandPtr strand;
 
 	/// The work that keeps the io_services running.   
-	std::vector<WorkPtr> workPool;
+	WorkPtr work;
 
 	//thread pool of service run
 	std::vector<std::shared_ptr<std::thread> > threadPool;

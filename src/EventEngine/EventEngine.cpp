@@ -108,12 +108,12 @@ void EventEngine::processTask()
 
 			if (it->second.blocking)
 			{
-				asio::strand& strand_ = servicePool->GetStrand(it->second.id);
+				asio::strand& strand_ = servicePool->GetStrand();
 				strand_.post(f);
 			}
 			else
 			{
-				asio::io_service& ioService_ = servicePool->GetIOService(it->second.id);
+				asio::io_service& ioService_ = servicePool->GetIOService();
 				ioService_.post(f);
 			}
 		}
