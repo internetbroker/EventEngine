@@ -17,9 +17,9 @@ EventEngine::~EventEngine()
 	}
 }
 
-Id EventEngine::RegisterHandler(std::string type, Handle f, bool isBlocking)
+ID EventEngine::RegisterHandler(std::string type, Handle f, bool isBlocking)
 {
-	Id inerID = GetID();
+	ID inerID = GetID();
 	HandlePool::Handler h;
 	h.id = inerID;
 	h.h = f;
@@ -30,7 +30,7 @@ Id EventEngine::RegisterHandler(std::string type, Handle f, bool isBlocking)
 	return inerID;
 }
 
-bool EventEngine::UnRegisterHandler(std::string type, Id regID)
+bool EventEngine::UnRegisterHandler(std::string type, ID regID)
 {
 	return handlePool->DeleteHandler(type, regID);
 }
@@ -108,22 +108,22 @@ void EventEngine::processTask()
 
 			if (it->second.blocking)
 			{
-				asio::strand& strand_ = servicePool->GetStrand();
+				asio::strand& strand_ = servicePool->GetStrand(it->second.id);
 				strand_.post(f);
 			}
 			else
 			{
-				asio::io_service& ioService_ = servicePool->GetIOService();
+				asio::io_service& ioService_ = servicePool->GetIOService(it->second.id);
 				ioService_.post(f);
 			}
 		}
 	}
 }
 
-Id EventEngine::GetID()
+ID EventEngine::GetID()
 {
 	std::lock_guard<std::mutex> lock(idMutex);
-	Id id = idCounter;
+	ID id = idCounter;
 	idCounter++;
 	return id;
 }

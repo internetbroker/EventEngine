@@ -12,7 +12,7 @@
 #  define CK_EXPORTS
 #endif
 
-using Id = std::uint64_t;
+using ID = std::uint64_t;
 
 /*event type*/
 #define EVENT_INFO "eInfo."

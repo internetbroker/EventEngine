@@ -16,7 +16,7 @@ public:
 	struct Handler
 	{
 		//handler number
-		Id id;
+		ID id;
 
 		//handler
 		Handle h;
@@ -34,7 +34,7 @@ public:
 	void WriteHandler(std::string type, Handler const& h);
 	Ret ReadHandler(std::string type);
 
-	bool DeleteHandler(std::string type, Id id);
+	bool DeleteHandler(std::string type, ID id);
 
 private:
 

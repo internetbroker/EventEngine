@@ -22,7 +22,7 @@ HandlePool::Ret HandlePool::ReadHandler(std::string type)
 	return handlers->equal_range(type);
 }
 
-bool HandlePool::DeleteHandler(std::string type, Id id)
+bool HandlePool::DeleteHandler(std::string type, ID id)
 {
 	std::lock_guard<std::recursive_mutex> lock(mutexOfMap);
 

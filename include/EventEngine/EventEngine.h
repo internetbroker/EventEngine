@@ -18,14 +18,14 @@ public:
 	EventEngine();
 	~EventEngine();
 
-	Id RegisterHandler(std::string type, Handle f, bool isBlocking = false);
-	bool UnRegisterHandler(std::string type, Id regID);
+	ID RegisterHandler(std::string type, Handle f, bool isBlocking = false);
+	bool UnRegisterHandler(std::string type, ID regID);
 	void Post(Task &t);
 
 	bool startEngine();
 	bool stopEngine();
 
-	Id GetID();
+	ID GetID();
 private:
 	void processTask();
 	void trigerTimer();
@@ -45,7 +45,7 @@ private:
 
 	std::shared_ptr<IOServicePool> servicePool;
 
-	Id idCounter;
+	ID idCounter;
 	std::mutex idMutex;
 };
 
