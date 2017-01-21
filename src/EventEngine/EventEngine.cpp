@@ -11,12 +11,15 @@ EventEngine::EventEngine()
 {
 	mTimerHandler = [&](const asio::error_code& ec)
 	{
-		Task task = Task();
-		task.type = EVENT_TIMER;
-		task.task_data = Datablk(1);
-		Post(task);
-		mTimer->expires_from_now(std::chrono::seconds(1));
-		mTimer->async_wait(mTimerHandler);
+		if (!ec)
+		{
+			Task task = Task();
+			task.type = EVENT_TIMER;
+			task.task_data = Datablk(1);
+			Post(task);
+			mTimer->expires_from_now(std::chrono::seconds(1));
+			mTimer->async_wait(mTimerHandler);
+		}
 	};
 }
 
