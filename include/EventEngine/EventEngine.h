@@ -7,6 +7,7 @@
 #include "HandlePool.h"
 #include "blockingconcurrentqueue.h"
 #include "IOServicePool.h"
+#include "asio/steady_timer.hpp"
 
 #include <thread>
 #include <atomic>
@@ -28,7 +29,6 @@ public:
 	ID GetID();
 private:
 	void processTask();
-	void trigerTimer();
 
 private:	
 	std::atomic<bool> active;
@@ -37,13 +37,17 @@ private:
 	std::thread* taskThread = nullptr;
 
 	//std::shared_ptr<std::thread> timerThread;
-	std::thread* timerThread = nullptr;
+	//std::thread* timerThread = nullptr;
 
 	std::shared_ptr<HandlePool> handlePool;
 
 	std::shared_ptr<moodycamel::BlockingConcurrentQueue<Task>> taskQueue;
 
 	std::shared_ptr<IOServicePool> servicePool;
+
+	std::shared_ptr<asio::steady_timer> mTimer;
+	typedef void(TimerHandler)(const asio::error_code&);
+	std::function<TimerHandler> mTimerHandler;
 
 	ID idCounter;
 	std::mutex idMutex;

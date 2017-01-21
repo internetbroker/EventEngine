@@ -1,5 +1,7 @@
 #include "EventEngine/EventEngine.h"
 
+#include <chrono>
+
 EventEngine::EventEngine()
 	:active(false)
 	, handlePool(new HandlePool)
@@ -7,6 +9,15 @@ EventEngine::EventEngine()
 	, taskQueue(new moodycamel::BlockingConcurrentQueue<Task>)
 	, servicePool(new IOServicePool)
 {
+	mTimerHandler = [&](const asio::error_code& ec)
+	{
+		Task task = Task();
+		task.type = EVENT_TIMER;
+		task.task_data = Datablk(1);
+		Post(task);
+		mTimer->expires_from_now(std::chrono::seconds(1));
+		mTimer->async_wait(mTimerHandler);
+	};
 }
 
 EventEngine::~EventEngine()
@@ -55,7 +66,12 @@ bool EventEngine::startEngine()
 	//timerThread.reset(new std::thread(std::bind(&EventEngine::trigerTimer, this)));
 
 	taskThread = new std::thread(std::bind(&EventEngine::processTask, this));
-	timerThread = new std::thread(std::bind(&EventEngine::trigerTimer, this));
+
+	mTimer.reset(new asio::steady_timer(servicePool->GetIOService()));
+	mTimer->expires_from_now(std::chrono::seconds(1));
+	mTimer->async_wait(mTimerHandler);
+
+	//timerThread = new std::thread(std::bind(&EventEngine::trigerTimer, this));
 
 	return true;
 }
@@ -69,9 +85,11 @@ bool EventEngine::stopEngine()
 
 	active = false;
 
-	timerThread->join();
+	mTimer->cancel();
+
+	/*timerThread->join();
 	delete timerThread;
-	timerThread = nullptr;
+	timerThread = nullptr;*/
 
 	if (taskQueue->size_approx())
 	{
@@ -126,18 +144,4 @@ ID EventEngine::GetID()
 	ID id = idCounter;
 	idCounter++;
 	return id;
-}
-
-void EventEngine::trigerTimer()
-{
-	while (active)
-	{
-		Task task = Task();
-		task.type = EVENT_TIMER;
-		task.task_data = Datablk(1);
-		Post(task);
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-		//std::this_thread::sleep_for(std::chrono::microseconds(1));
-		//std::this_thread::sleep_for(std::chrono::nanoseconds(1));
-	}
 }
